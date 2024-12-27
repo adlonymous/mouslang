@@ -31,6 +31,41 @@ class AstPrinter implements Expr.Visitor<String> {
         return "super " + expr.method.lexeme; // Adjust as needed based on your implementation
     }
 
+    @Override
+    public String visitThisExpr(Expr.This expr) {
+        return "this"; // Adjust as needed based on your implementation
+    }
+
+    @Override
+    public String visitVariableExpr(Expr.Variable expr) {
+        return expr.name.lexeme; // Assuming 'name' is a field in Expr.Variable
+    }
+
+    @Override
+    public String visitGetExpr(Expr.Get expr) {
+        return "get " + expr.name.lexeme; // Adjust as needed based on your implementation
+    }
+
+    @Override
+    public String visitCallExpr(Expr.Call expr) {
+        return parenthesize("call", expr.callee); // Adjust as needed based on your implementation
+    }
+
+    @Override
+    public String visitSetExpr(Expr.Set expr) {
+        return "set " + expr.name.lexeme + " = " + expr.value.accept(this); // Adjust as needed based on your implementation
+    }
+
+    @Override
+    public String visitAssignExpr(Expr.Assign expr) {
+        return "assign " + expr.name.lexeme + " = " + expr.value.accept(this); // Adjust as needed based on your implementation
+    }
+
+    @Override
+    public String visitLogicalExpr(Expr.Logical expr) {
+        return parenthesize("logical", expr.left, expr.right); // Adjust as needed based on your implementation
+    }
+
     private String parenthesize(String name, Expr... exprs) {
         StringBuilder builder = new StringBuilder();
 
