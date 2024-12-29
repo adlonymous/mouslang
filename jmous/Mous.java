@@ -10,6 +10,12 @@ import java.util.List;
 
 
 public class Mous {
+
+    private static final Interpreter interpreter = new Interpreter();
+
+    static boolean hadError = false;
+    static boolean hadRuntimeError = false;
+
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
             System.out.println("Usage: mous [script]");
@@ -26,6 +32,7 @@ public class Mous {
         run(new String(bytes, Charset.defaultCharset()));
 
         if(hadError) System.exit(65);
+        if(hadRuntimeError) System.exit(70);
     }
 
     private static void runPrompt() throws IOException {
@@ -51,7 +58,11 @@ public class Mous {
 
         if (hadError) return;
 
-        System.out.println(new AstPrinter().print(expression));
+        interpreter.interpret(expression);
+    }
+
+    static void error(int line, String message) {
+        report(line, "", message);
     }
 
     static void error(Token token, String message) {
@@ -70,8 +81,4 @@ public class Mous {
         );
         hadError = true;
     }
-
-    static boolean hadError = false;
-
-
 }
