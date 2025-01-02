@@ -5,16 +5,22 @@ import java.util.Map;
 
 class MousClass implements MousCallable {
     final String name;
+    final MousClass superclass;
     private final Map<String, MousFunction> methods;
 
-    LoxClass(String name) {
+    MousClass(String name, MousClass superclass, Map<String, MousFunction> methods){ 
+        this.superclass = superclass;
         this.name = name;
         this.methods = methods;
     }
 
-    LoxFunction findMethod(String name){
+    MousFunction findMethod(String name){
         if (methods.containsKey(name)){
             return methods.get(name);
+        }
+
+        if (superclass != null) {
+            return superclass.findMethod(name);
         }
 
         return null;

@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 class MousInstance {
-    private LoxClass klass;
+    private MousClass klass;
     private final Map<String, Object> fields = new HashMap<>();
 
-    LoxInstance(LoxClass klass){
+    MousInstance(MousClass klass){
         this.klass = klass;
     }
 
