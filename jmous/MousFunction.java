@@ -5,10 +5,18 @@ import java.util.List;
 class MousFunction implements MousCallable {
     private final Stmt.Function declaration;
     private final Environment closure;
+    private final boolean isInitializer;
 
-    MousFunction(Stmt.Function declaration, Environment closure) {
+    MousFunction(Stmt.Function declaration, Environment closure, boolean isInitializer){
+        this.isInitializer = isInitializer;
         this.closure = closure;
         this.declaration = declaration;
+    }
+
+    MousFunction bind(MousInstance instance) {
+        Environment environment = new Environment(closure);
+        environment.define("this", instance);
+        return new MousFunction(declaration, environment, isInitializer);
     }
   
     @Override
@@ -21,8 +29,11 @@ class MousFunction implements MousCallable {
         try {
             interpreter.executeBlock(declaration.body, environment);
         } catch (Return returnValue) {
+            if(isInitializer) return closure.getAt(0, "this");
             return returnValue.value;
         }
+
+        if(isInitializer()) return closure.getAt(0, "this");
         return null;
     }
 
