@@ -37,6 +37,12 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         return null;
     }
 
+    void resolve(List<Stmt> statements) {
+        for (Stmt statement: statements) {
+            resolve(statement);
+        }
+    }
+
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
 
@@ -71,6 +77,12 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         currentClass = enclosingClass;
         return null;
     }
+    
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt){
+        resolve(stmt.expression);
+        return null;
+    }
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt){
@@ -78,6 +90,20 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         define(stmt.name);
 
         resolveFunction(stmt, FunctionType.FUNCTION);
+        return null;
+    }
+
+    @Override 
+    public Void visitIfStmt(Stmt.If stmt){
+        resolve(stmt.condition);
+        resolve(stmt.thenBranch);
+        if (stmt.elseBranch != null) resolve(stmt.elseBranch);
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt){
+        resolve(stmt.expression);
         return null;
     }
 
@@ -144,6 +170,17 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitGroupingExpr(Expr.Grouping expr){
+        resolve(expr.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitLiteralExpr(Expr.Literal expr){
+        return null;
+    }
+
+    @Override
     public Void visitLogicalExpr(Expr.Logical expr){
         resolve(expr.left);
         resolve(expr.right);
@@ -163,6 +200,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             Mous.error(expr.keyword, "Cannot use 'super' outside of a class.");
         } else if (currentClass != ClassType.SUBCLASS) {
             Mous.error(expr.keyword, "Cannot use 'super' in a class with no superclass.");
+        }
         resolveLocal(expr, expr.keyword);
         return null;
     }
@@ -191,12 +229,6 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
         resolveLocal(expr, expr.name);
         return null;
-    }
-
-    void resolve(List<Stmt> statements) {
-        for (Stmt statement: statements) {
-            resolve(statement);
-        }
     }
 
     private void resolve(Stmt stmt){

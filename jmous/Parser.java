@@ -24,11 +24,12 @@ public class Parser {
     }
 
     private Expr expression() {
-        return equality();
+        return assignment();
     }
 
     private Stmt declaration() {
         try {
+            if (match(CLASS)) return classDeclaration();
             if (match(FUN)) return function("function");
             if (match(VAR)) return varDeclaration();
 
@@ -418,7 +419,7 @@ public class Parser {
         while(!isAtEnd()) {
             if(previous().type == SEMICOLON) return;
 
-            switch(peek().type) {
+            switch (peek().type) {
                 case CLASS:
                 case FUN:
                 case VAR:
@@ -428,6 +429,7 @@ public class Parser {
                 case PRINT:
                 case RETURN:
                     return;
+                default:
             }
 
             advance();

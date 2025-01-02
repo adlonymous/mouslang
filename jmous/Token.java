@@ -1,6 +1,6 @@
 package jmous;
 
-public class Token {
+class Token {
     final TokenType type;
     final String lexeme;
     final Object literal;
